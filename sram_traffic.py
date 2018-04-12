@@ -23,7 +23,7 @@ def gen_sram_write_trace(
 
         fwrite = open(sram_write_trace_file, 'a')
 
-        for i in range(num_folds):
+        for i in range(int(num_folds)):
             d = int(min(d_h, num_left))
 
             for j in range(int(d_v)):
@@ -254,12 +254,13 @@ def sram_traffic(
     f1.close()
 
     num_folds = math.ceil(num_filt / num_v_lanes)
+    print num_folds
     max_v_counts = math.ceil(e2 / num_h_lanes)
 
     v_rem = num_filt
 
     #pbar = ProgressBar(maxval=100).start()
-    for fold in tqdm(range(num_folds)):
+    for fold in tqdm(range(int(num_folds))):
     #for fold in range(num_folds):
         v_base = []
         v_id = []
