@@ -73,7 +73,7 @@ def sram_traffic(
             rem_h = r2c                     # Tracks the elements processed within a conv filter 
             next_ifmap_addr = ifmap_base    # Starts from the top left corner of the IFMAP matrix
 
-            for h in range(num_h_fold):
+            for h in range(int(num_h_fold)):
                 rows_this_fold = min(rem_h, dimension_rows) 
                 #print("h fold id: " + str(h))
 
