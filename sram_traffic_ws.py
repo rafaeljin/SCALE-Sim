@@ -265,7 +265,7 @@ def gen_ifmap_trace(
         # ie. last row has the first weight element
         l = len(row_entry)
         #print("Parallel windows = " + str(parallel_window))
-        for w in range(parallel_window):
+        for w in range(int(parallel_window)):
             #print("Window = " + str(w))
             for ridx in range(l):
                 entry += str(row_entry[l - ridx -1]) + ", "
@@ -441,7 +441,7 @@ def gen_trace_ofmap(
         cycle += 1
         
         done = filters_done
-        for col in range(effective_cols):
+        for col in range(int(effective_cols)):
             if done < num_filter:
                 a = e * num_filter + col                # z first row major
                 a = a + ofmap_add_offset + ofmap_base
