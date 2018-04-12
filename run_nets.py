@@ -38,6 +38,7 @@ def run_net( ifmap_sram_size=1,
     first = True
     
     for row in param_file:
+        print "row is " + row
         if first:
             first = False
             continue
@@ -104,7 +105,8 @@ def run_net( ifmap_sram_size=1,
 
         last_line = subprocess.check_output(["tail","-1", net_name + "_" + name + "_sram_write.csv"] )
         clk = str(last_line).split(',')[0]
-        clk = str(clk).split("'")[1]
+        # rafaeljin, clk contains no ' ?
+        # clk = str(clk).split("'")[1] 
         line = name + ",\t" + clk + ",\n"
         cycl.write(line)
 

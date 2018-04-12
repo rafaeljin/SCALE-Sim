@@ -59,7 +59,7 @@ def sram_traffic(
         addr = (px / E_w) * hc + (px%E_w) * strides 
         all_ifmap_base_addr.append(addr)
 
-    for v in tqdm(range(num_v_folds)):
+    for v in tqdm(range(int(num_v_folds))):
         #print("V fold id: " + str(v))
             
         # Take a slice of the starting addresses that are relevant for this v_fold 
@@ -192,7 +192,7 @@ def gen_filter_trace(
     rem = filters_this_fold                 # Track the number of filters yet to process
 
     #For each wrap around
-    for w in range(parallel_window):
+    for w in range(int(parallel_window)):
         # Number of active columns in this wrap
         cols = min(num_cols, rem)
         rem -= cols
@@ -239,7 +239,7 @@ def gen_ifmap_trace(
     idle = num_rows - (r2c * parallel_window)
     idle = max(idle, 0)
     #print("Idle lanes = " + str(idle))
-    for i in range(idle):
+    for i in range(int(idle)):
         postfix += ", "
     postfix += "\n"
 

@@ -59,7 +59,7 @@ def dram_trace_read_v2(
                     while len(sram) > 0:
                         trace = str(c) + ", "
 
-                        for _ in range(words_per_cycle):
+                        for _ in range(int(words_per_cycle)):
                             if len(sram) > 0:
                                 p = sram.pop()
                                 trace += str(p) + ", "
@@ -88,7 +88,7 @@ def dram_trace_read_v2(
         while len(sram) > 0:
             trace = str(c) + ", "
 
-            for _ in range(words_per_cycle):
+            for _ in range(int(words_per_cycle)):
                 if len(sram) > 0:
                     p = sram.pop()
                     trace += str(p) + ", "
