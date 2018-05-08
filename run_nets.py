@@ -15,19 +15,18 @@ def run_net( ifmap_sram_size=1,
              net_name='yolo_v2'
             ):
 
+    # size based on bytes
     ifmap_sram_size *= 1024
     filter_sram_size *= 1024
     ofmap_sram_size *= 1024
 
-    #fname = net_name + ".csv"
     param_file = open(topology_file, 'r')
 
+    # output files fname = net_name + ".csv"
     fname = net_name + "_avg_bw.csv"
     bw = open(fname, 'w')
-
     f2name = net_name + "_max_bw.csv"
     maxbw = open(f2name, 'w')
-
     f3name = net_name + "_cycles.csv"
     cycl = open(f3name, 'w')
 

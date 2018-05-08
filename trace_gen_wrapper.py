@@ -35,8 +35,8 @@ def gen_all_traces(
             num_channels=num_channels,
             strides=strides, num_filt=num_filt,
             filt_base=filt_base, ifmap_base=ifmap_base,
-            sram_read_trace_file=sram_read_trace_file,
-            sram_write_trace_file=sram_write_trace_file
+            sram_read_trace_file = sram_read_trace_file,
+            sram_write_trace_file = sram_write_trace_file
         )
     elif data_flow == 'ws': 
         sram_ws.sram_traffic(
@@ -162,7 +162,7 @@ def gen_max_bw_numbers( dram_ifmap_trace_file, dram_filter_trace_file,
     #print(log)
     return log
 
-
+# uses dram trace file to generate bandwidth results
 def gen_bw_numbers( dram_ifmap_trace_file, dram_filter_trace_file,
                     dram_ofmap_trace_file, sram_write_trace_file, 
                     sram_read_trace_file
