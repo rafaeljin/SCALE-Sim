@@ -8,6 +8,7 @@ class scale:
     def __init__(self):
         self.sweep = False 
 
+    # reading configurations from config_file_name
     def parse_config(self):
         general = 'general'
         arch_sec = 'architecture_presets'
@@ -17,52 +18,36 @@ class scale:
         config = cp.ConfigParser()
         config.read(config_filename)
     
-        ## Read the run name
         self.run_name = config.get(general, 'run_name')
 
-        ## Read the architecture_presets
-        ## Array height min, max
+        # ArrayHeight and ArrayWidth can be either 1(regular) or 2(min/max height,width)
+        # ar_[h/w]_[min/max]: Array Height/Width and min/max values
         ar_h = config.get(arch_sec, 'ArrayHeight').split(',')
         self.ar_h_min = ar_h[0].strip()
-    
         if len(ar_h) > 1:
             self.ar_h_max = ar_h[1].strip()
-        #print("Min: " + ar_h_min + " Max: " + ar_h_max)
-    
-        ## Array width min, max
         ar_w = config.get(arch_sec, 'ArrayWidth').split(',')
         self.ar_w_min = ar_w[0].strip()
-        
         if len(ar_w) > 1:
             self.ar_w_max = ar_w[1].strip()
     
-        ## IFMAP SRAM buffer min, max
+        # [i/f/o]sram_[min/max]: IFMAP/FILTER/OFMAP SRAM buffer min/max
         ifmap_sram = config.get(arch_sec, 'IfmapSramSz').split(',')
         self.isram_min = ifmap_sram[0].strip()
-        
         if len(ifmap_sram) > 1:
             self.isram_max = ifmap_sram[1].strip()
-       
-    
-        ## FILTER SRAM buffer min, max
         filter_sram = config.get(arch_sec, 'FilterSramSz').split(',')
         self.fsram_min = filter_sram[0].strip()
-        
         if len(filter_sram) > 1:
             self.fsram_max = filter_sram[1].strip()
-        
-        
-        ## OFMAP SRAM buffer min, max
         ofmap_sram = config.get(arch_sec, 'OfmapSramSz').split(',')
         self.osram_min = ofmap_sram[0].strip()
-        
         if len(ofmap_sram) > 1:
             self.osram_max = ofmap_sram[1].strip()
     
         self.dataflow= config.get(arch_sec, 'Dataflow')
     
         ## Read network_presets
-        ## For now that is just the topology csv filename
         topology_file = config.get(net_sec, 'TopologyCsvLoc')
         self.topology_file = topology_file.split('"')[1]     #Config reads the quotes as well 
 
@@ -148,7 +133,7 @@ class scale:
 
 if __name__ == "__main__":
     s = scale()
-    #s.run_scale()
-    s.run_sweep()
+    s.run_scale()
+    #s.run_sweep()
 
     

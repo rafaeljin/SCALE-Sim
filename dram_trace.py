@@ -28,7 +28,7 @@ def dram_trace_read_v2(
     init_bw         = default_read_bw         # Taking an arbitrary initial bw of 4 bytes per cycle
 
     sram = set()
-
+    print('sram_size',sram_sz)
     sram_requests = open(sram_trace_file, 'r')
     dram          = open(dram_trace_file, 'w')
 
@@ -45,6 +45,7 @@ def dram_trace_read_v2(
             if (elems[e] not in sram) and (elems[e] >= min_addr) and (elems[e] < max_addr):
 
                 # Used up all the unique data in the SRAM?
+
                 if len(sram) + word_sz_bytes > sram_sz:
 
                     if t_fill_start == -1:
@@ -81,6 +82,7 @@ def dram_trace_read_v2(
 
         # Generate the filling trace from time t_fill_start to t_drain_start
         cycles_needed = t_drain_start - t_fill_start
+        # rafaelj bug division by 0
         words_per_cycle = math.ceil(len(sram) / (cycles_needed * word_sz_bytes))
 
         c = t_fill_start
@@ -208,5 +210,5 @@ def dram_trace_write(ofmap_sram_size = 64,
 if __name__ == "__main__":
     dram_trace_read_v2(min_addr=0, max_addr=1000000, dram_trace_file="ifmaps_dram_read.csv")
     dram_trace_read_v2(min_addr=1000000, max_addr=100000000, dram_trace_file="filter_dram_read.csv")
-        #dram_trace_read(filter_sram_sz=1024, ifmap_sram_sz=1024, sram_trace_file="sram_read.csv")
-        #dram_trace_write(ofmap_sram_size=1024,sram_write_trace_file="yolo_tiny_layer1_write.csv", dram_write_trace_file="yolo_tiny_layer1_dram_write.csv")
+    '''dram_trace_read(filter_sram_sz=1024, ifmap_sram_sz=1024, sram_trace_file="sram_read.csv")
+    dram_trace_write(ofmap_sram_size=1024,sram_write_trace_file="yolo_tiny_layer1_write.csv", dram_write_trace_file="yolo_tiny_layer1_dram_write.csv")'''

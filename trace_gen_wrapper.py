@@ -35,8 +35,8 @@ def gen_all_traces(
             num_channels=num_channels,
             strides=strides, num_filt=num_filt,
             filt_base=filt_base, ifmap_base=ifmap_base,
-            sram_read_trace_file=sram_read_trace_file,
-            sram_write_trace_file=sram_write_trace_file
+            sram_read_trace_file = sram_read_trace_file,
+            sram_write_trace_file = sram_write_trace_file
         )
     elif data_flow == 'ws': 
         sram_ws.sram_traffic(
@@ -53,26 +53,26 @@ def gen_all_traces(
 
     #print("Generating DRAM traffic")
     dram.dram_trace_read_v2(
-        sram_sz=ifmap_sram_size,
-        word_sz_bytes=word_size_bytes,
-        min_addr=ifmap_base, max_addr=filt_base,
-        sram_trace_file=sram_read_trace_file,
-        dram_trace_file=dram_ifmap_trace_file,
+        sram_sz = ifmap_sram_size,
+        word_sz_bytes = word_size_bytes,
+        min_addr = ifmap_base, max_addr = filt_base,
+        sram_trace_file = sram_read_trace_file,
+        dram_trace_file = dram_ifmap_trace_file,
     )
 
     dram.dram_trace_read_v2(
-        sram_sz= filter_sram_size,
-        word_sz_bytes= word_size_bytes,
-        min_addr=filt_base, max_addr=(filt_base * 10000),
-        sram_trace_file= sram_read_trace_file,
-        dram_trace_file= dram_filter_trace_file,
+        sram_sz = filter_sram_size,
+        word_sz_bytes = word_size_bytes,
+        min_addr = filt_base, max_addr = (filt_base * 10000),
+        sram_trace_file = sram_read_trace_file,
+        dram_trace_file = dram_filter_trace_file,
     )
 
     dram.dram_trace_write(
-        ofmap_sram_size= ofmap_sram_size,
-        data_width_bytes= word_size_bytes,
-        sram_write_trace_file= sram_write_trace_file,
-        dram_write_trace_file= dram_ofmap_trace_file
+        ofmap_sram_size = ofmap_sram_size,
+        data_width_bytes = word_size_bytes,
+        sram_write_trace_file = sram_write_trace_file,
+        dram_write_trace_file = dram_ofmap_trace_file
     )
 
     bw_numbers = gen_bw_numbers(dram_ifmap_trace_file, dram_filter_trace_file, dram_ofmap_trace_file, sram_write_trace_file, sram_read_trace_file)
@@ -162,7 +162,7 @@ def gen_max_bw_numbers( dram_ifmap_trace_file, dram_filter_trace_file,
     #print(log)
     return log
 
-
+# uses dram trace file to generate bandwidth results
 def gen_bw_numbers( dram_ifmap_trace_file, dram_filter_trace_file,
                     dram_ofmap_trace_file, sram_write_trace_file, 
                     sram_read_trace_file

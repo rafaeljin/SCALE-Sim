@@ -5,10 +5,12 @@ from tqdm import tqdm
 
 def gen_sram_write_trace(
         d_h= 4, d_v = 4,
+        # v_use: how many v lanes are in use
         v_id = [], e2 = 25, r2c = 27, v_use = 4,
         global_cycles = 0,
         sram_write_trace_file = "sram_write.csv"
     ):
+        # time for last output
         t_last_out = []
 
         for v in range(int(d_v)):
@@ -17,10 +19,10 @@ def gen_sram_write_trace(
             else:
                 val =t_last_out[v-1] + 1
                 t_last_out.append(val)
-
+        # determine number of folds for ifmap (horizontal input)
         num_folds = math.ceil(e2/d_h)
         num_left = e2
-
+        print "v_use:" + str(v_use)
         fwrite = open(sram_write_trace_file, 'a')
 
         for i in range(int(num_folds)):
@@ -33,6 +35,9 @@ def gen_sram_write_trace(
                     t_last_out[j] = cycl
 
                     for k in range(d):
+                        # i: fold id for ifmap/horizontal input 
+                        # j: filter id
+                        # k: id for ifmap/horizontal input 
                         add = v_id[j] * e2 + i * d_h + k
                         trace += str(add) + ", "
 
@@ -68,7 +73,7 @@ def gen_trace_one_fold(
     h_base = []
     h_addr = []
     slide_ctr   = 0
-
+    print 'd_h:', d_h
     for i in range(int(d_h)):
         if i == 0:
             base = 0
@@ -88,7 +93,9 @@ def gen_trace_one_fold(
         h_base.append(base)
         h_addr.append(base)
         h_id.append(i)
-
+    print "haha"
+    print h_base
+    print h_id
 
     for i in range(int(d_v)):
         v_ctr.append(0)
@@ -227,21 +234,20 @@ def sram_traffic(
         sram_read_trace_file="sram_read.csv",
         sram_write_trace_file="sram_write.csv"
     ):
-
+    
+    # E: entries or entities of convolutions (steps) 
     E_h = (ifmap_h - filt_h + strides) / strides
     E_w = (ifmap_w - filt_w + strides) / strides
-
+    # e2: number of entries per filter, also corresponds to horizontal inputs
+    # r2c: number of elements in each filter 
+    # rc: 
     e2 = E_h * E_w
     r2c = filt_h * filt_w * num_channels
     rc = filt_w * num_channels
-    h2 = ifmap_w * ifmap_h
+    # h2 = ifmap_w * ifmap_h # not used?
 
     num_h_lanes = min(dimensions_h, e2)
     num_v_lanes = min(dimensions_v, num_filt)
-
-    #d = min(num_h_lanes, num_v_lanes)
-    #num_h_lanes = d
-    #num_v_lanes = d
 
     # Simulation part
     global_cycles = 0
@@ -249,22 +255,21 @@ def sram_traffic(
     # Delete the prev file
     f = open(sram_read_trace_file, 'w')
     f.close()
-
     f1 = open(sram_write_trace_file, 'w')
     f1.close()
 
+    # how many folds for filters to fit in vertical input
     num_folds = math.ceil(num_filt / num_v_lanes)
-    print num_folds
+    print "num_folds is " + str(num_folds)
     max_v_counts = math.ceil(e2 / num_h_lanes)
 
     v_rem = num_filt
 
-    #pbar = ProgressBar(maxval=100).start()
     for fold in tqdm(range(int(num_folds))):
-    #for fold in range(num_folds):
+
+        # v_id: filter id, v_base: base address for filter
         v_base = []
         v_id = []
-
         for i in range(int(num_v_lanes)):
             if i < v_rem:
                 id = fold * num_v_lanes + i
@@ -297,13 +302,12 @@ def sram_traffic(
                             )
 
         global_cycles -= 1
-        #print(global_cycles)
+        print("global_cycles: " + str(global_cycles))
 
         del(v_id[:])
         del(v_base[:])
 
         v_rem -= min(num_v_lanes, v_rem)
-    #pbar.finish()
 
     print("Compute finished at: " + str(final) + " cycles")
 
