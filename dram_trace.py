@@ -39,8 +39,10 @@ def dram_trace_read_v2(
         elems = [float(x) for x in elems]
 
         clk = elems[0]
+        print('clk',clk)
 
         for e in range(1, len(elems)):
+            print ('e',int(elems[e]))
 
             if (elems[e] not in sram) and (elems[e] >= min_addr) and (elems[e] < max_addr):
 
@@ -48,14 +50,21 @@ def dram_trace_read_v2(
 
                 if len(sram) + word_sz_bytes > sram_sz:
 
+                    print ('before:drain',t_drain_start,'fill',t_fill_start)
                     if t_fill_start == -1:
-                        t_fill_start = t_drain_start - math.ceil(len(sram) / (init_bw * word_sz_bytes))
+                        t_fill_start = t_drain_start - math.ceil(len(sram) / (1.0 * init_bw * word_sz_bytes))
+                        '''print ('sram',len(sram))
+                        print ('bw',init_bw)
+                        print ('wordsize',word_sz_bytes)
+                        print ('t_drain',t_drain_start)
+                        print ('t_filllh',t_fill_start)'''
 
                     # Generate the filling trace from time t_fill_start to t_drain_start
                     cycles_needed   = t_drain_start - t_fill_start
-                    words_per_cycle = math.ceil(len(sram) / (cycles_needed * word_sz_bytes))
+                    words_per_cycle = math.ceil(len(sram) / (1.0 * cycles_needed * word_sz_bytes))
 
                     c = t_fill_start
+                    print('written to dram read ifmap',c)
 
                     while len(sram) > 0:
                         trace = str(c) + ", "
@@ -71,6 +80,8 @@ def dram_trace_read_v2(
 
                     t_fill_start    = t_drain_start
                     t_drain_start   = clk
+                    
+                    print ('after:drain',t_drain_start,'fill',t_fill_start)
 
                 # Add the new element to sram
                 sram.add(elems[e])

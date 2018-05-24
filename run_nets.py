@@ -16,9 +16,11 @@ def run_net( ifmap_sram_size=1,
             ):
 
     # size based on bytes
-    ifmap_sram_size *= 1024
-    filter_sram_size *= 1024
-    ofmap_sram_size *= 1024
+    # ifmap_sram_size *= 1024
+    # filter_sram_size *= 1024
+    # ofmap_sram_size *= 1024
+    # rafaelj tmp modi, change size to real value instead of times 1024
+    
 
     param_file = open(topology_file, 'r')
 
