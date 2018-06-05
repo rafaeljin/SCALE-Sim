@@ -259,9 +259,9 @@ def sram_traffic(
     f1.close()
 
     # how many folds for filters to fit in vertical input
-    num_folds = math.ceil(num_filt / num_v_lanes)
+    num_folds = math.ceil(1.0 * num_filt / num_v_lanes)
     print "num_folds is " + str(num_folds)
-    max_v_counts = math.ceil(e2 / num_h_lanes)
+    max_v_counts = math.ceil(1.0 * e2 / num_h_lanes)
 
     v_rem = num_filt
 
