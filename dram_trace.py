@@ -18,7 +18,7 @@ def dram_trace_read_v2(
         sram_sz         = 512 * 1024,
         word_sz_bytes   = 1,
         min_addr = 0, max_addr=1000000,
-        default_read_bw = 10,               # this is arbitrary
+        default_read_bw = 1,               # this is arbitrary, change back to 10?
         sram_trace_file = "sram_log.csv",
         dram_trace_file = "dram_log.csv"
     ):
@@ -28,7 +28,7 @@ def dram_trace_read_v2(
     init_bw         = default_read_bw         # Taking an arbitrary initial bw of 4 bytes per cycle
 
     sram = set()
-    print('sram_size',sram_sz)
+    print('sram_sz',sram_sz)
     sram_requests = open(sram_trace_file, 'r')
     dram          = open(dram_trace_file, 'w')
 
@@ -39,10 +39,10 @@ def dram_trace_read_v2(
         elems = [float(x) for x in elems]
 
         clk = elems[0]
-        print('clk',clk)
+        #print('clk',clk)
 
         for e in range(1, len(elems)):
-            print ('e',int(elems[e]))
+            #print ('e',int(elems[e]))
 
             if (elems[e] not in sram) and (elems[e] >= min_addr) and (elems[e] < max_addr):
 
@@ -50,7 +50,7 @@ def dram_trace_read_v2(
 
                 if len(sram) + word_sz_bytes > sram_sz:
 
-                    print ('before:drain',t_drain_start,'fill',t_fill_start)
+                    #print ('before:drain',t_drain_start,'fill',t_fill_start)
                     if t_fill_start == -1:
                         t_fill_start = t_drain_start - math.ceil(len(sram) / (1.0 * init_bw * word_sz_bytes))
                         '''print ('sram',len(sram))
@@ -64,7 +64,7 @@ def dram_trace_read_v2(
                     words_per_cycle = math.ceil(len(sram) / (1.0 * cycles_needed * word_sz_bytes))
 
                     c = t_fill_start
-                    print('written to dram read ifmap',c)
+                    #print('written to dram read ifmap',c)
 
                     while len(sram) > 0:
                         trace = str(c) + ", "
@@ -81,11 +81,12 @@ def dram_trace_read_v2(
                     t_fill_start    = t_drain_start
                     t_drain_start   = clk
                     
-                    print ('after:drain',t_drain_start,'fill',t_fill_start)
+                    #print ('after:drain',t_drain_start,'fill',t_fill_start)
 
                 # Add the new element to sram
                 sram.add(elems[e])
 
+    print '1putz' 
 
     if len(sram) > 0:
         if t_fill_start == -1:
@@ -213,7 +214,7 @@ def dram_trace_write(ofmap_sram_size = 64,
 
             trace_file.write(trace + "\n")
 
-
+    print 'done'
     #All traces done
     traffic.close()
     trace_file.close()

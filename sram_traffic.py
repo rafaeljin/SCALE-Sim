@@ -20,6 +20,7 @@ def gen_sram_write_trace(
                 val =t_last_out[v-1] + 1
                 t_last_out.append(val)
         # determine number of folds for ifmap (horizontal input)
+        print ('e2',e2)
         num_folds = math.ceil(e2/d_h)
         num_left = e2
         print "v_use:" + str(v_use)
@@ -243,6 +244,7 @@ def sram_traffic(
     # rc: 
     e2 = E_h * E_w
     r2c = filt_h * filt_w * num_channels
+    print ("r2c",r2c)
     rc = filt_w * num_channels
     # h2 = ifmap_w * ifmap_h # not used?
 

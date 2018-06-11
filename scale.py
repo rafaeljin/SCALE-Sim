@@ -10,7 +10,7 @@ class scale:
 
     # reading configurations from config_file_name
     def parse_config(self):
-        general = 'general'
+        general = 'general' 
         arch_sec = 'architecture_presets'
         net_sec  = 'network_presets'
         config_filename = "./scale.cfg"
@@ -46,6 +46,11 @@ class scale:
             self.osram_max = ofmap_sram[1].strip()
     
         self.dataflow= config.get(arch_sec, 'Dataflow')
+
+        # architecture maximum bandwidth limitation
+        arc_max_bandw = config.get(arch_sec,'MaxBandwidth').split(',')
+        self.arc_maxbw = arc_max_bandw[0].strip()
+        print('jara',self.arc_maxbw)
     
         ## Read network_presets
         topology_file = config.get(net_sec, 'TopologyCsvLoc')
@@ -70,6 +75,7 @@ class scale:
         print("SRAM OFMAP: \t" + str(self.osram_min))
         print("CSV file path: \t" + self.topology_file) 
         print("Dataflow: \t" + df_string)
+        print("Architecture Max BandWidth Allowed: \t" + str(self.arc_maxbw))
         print("====================================================")
 
         net_name = self.topology_file.split('/')[-1].split('.')[0]
@@ -82,6 +88,7 @@ class scale:
                     array_w = int(self.ar_w_min),
                     net_name = net_name,
                     data_flow = self.dataflow,
+                    arc_maxbw = int(self.arc_maxbw),
                     topology_file = self.topology_file
                 )
         

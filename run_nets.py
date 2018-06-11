@@ -11,19 +11,17 @@ def run_net( ifmap_sram_size=1,
              array_h=32,
              array_w=32,
              data_flow = 'os',
+             arc_maxbw = 10,
              topology_file = './topologies/yolo_v2.csv',
              net_name='yolo_v2'
             ):
 
+    # rafaelj tmp modi, change size to real value instead of times 1024
     # size based on bytes
     # ifmap_sram_size *= 1024
     # filter_sram_size *= 1024
     # ofmap_sram_size *= 1024
 
-    # rafaelj tmp modi, change size to real value instead of times 1024
-    ifmap_sram_size *= 1024
-    filter_sram_size *= 1024
-    ofmap_sram_size *= 1024
 
     param_file = open(topology_file, 'r')
 
@@ -89,10 +87,13 @@ def run_net( ifmap_sram_size=1,
                                     ifmap_sram_size = ifmap_sram_size, 
                                     ofmap_sram_size = ofmap_sram_size,
                                     filt_base =  filter_base,
+                                    arc_maxbw = arc_maxbw,
                                     sram_read_trace_file= net_name + "_" + name + "_sram_read.csv",
                                     sram_write_trace_file= net_name + "_" + name + "_sram_write.csv",
                                     dram_filter_trace_file=net_name + "_" + name + "_dram_filter_read.csv",
                                     dram_ifmap_trace_file= net_name + "_" + name + "_dram_ifmap_read.csv",
+                                    dram_ifmap_limited_file= net_name + "_" + name + "_dram_ifmap_limited.csv",
+                                    dram_filter_limited_file= net_name + "_" + name + "_dram_filter_limited.csv",
                                     dram_ofmap_trace_file= net_name + "_" + name + "_dram_ofmap_write.csv"
                                     )
 
