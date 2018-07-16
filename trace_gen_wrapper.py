@@ -88,14 +88,14 @@ def gen_all_traces(
         sram_trace_file = sram_read_trace_file,
         dram_trace_file = dram_ifmap_limited_file
     )
-    dram_l.dram_trace_limited(
+    """dram_l.dram_trace_limited(
         sram_sz = filter_sram_size,
         word_sz_bytes = word_size_bytes,
         min_addr = filt_base, max_addr = (filt_base * 10000),
         max_bw = arc_maxbw, # could set different bw limit for filter and input
         sram_trace_file = sram_read_trace_file,
         dram_trace_file = dram_filter_limited_file
-    )
+    )"""
 
     bw_numbers = gen_bw_numbers(dram_ifmap_trace_file, dram_filter_trace_file, dram_ofmap_trace_file, sram_write_trace_file, sram_read_trace_file)
 
