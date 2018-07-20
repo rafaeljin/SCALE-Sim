@@ -28,7 +28,6 @@ def dram_trace_read_v2(
     init_bw         = default_read_bw         # Taking an arbitrary initial bw of 4 bytes per cycle
 
     sram = set()
-    print('sram_sz',sram_sz)
     sram_requests = open(sram_trace_file, 'r')
     dram          = open(dram_trace_file, 'w')
 
@@ -86,7 +85,6 @@ def dram_trace_read_v2(
                 # Add the new element to sram
                 sram.add(elems[e])
 
-    print '1putz' 
 
     if len(sram) > 0:
         if t_fill_start == -1:

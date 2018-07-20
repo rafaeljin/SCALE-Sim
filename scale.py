@@ -49,7 +49,8 @@ class scale:
 
         # architecture maximum bandwidth limitation
         arc_max_bandw = config.get(arch_sec,'MaxBandwidth').split(',')
-        self.arc_maxbw = arc_max_bandw[0].strip()
+        #self.arc_maxbw = arc_max_bandw[0].strip()
+        self.arc_maxbw = [int(x.strip()) for x in arc_max_bandw] 
         print('jara',self.arc_maxbw)
     
         ## Read network_presets
@@ -88,7 +89,7 @@ class scale:
                     array_w = int(self.ar_w_min),
                     net_name = net_name,
                     data_flow = self.dataflow,
-                    arc_maxbw = int(self.arc_maxbw),
+                    arc_maxbw = self.arc_maxbw,
                     topology_file = self.topology_file
                 )
         

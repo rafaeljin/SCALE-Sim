@@ -18,7 +18,7 @@ def gen_all_traces(
         filter_sram_size = 64, ifmap_sram_size= 64, ofmap_sram_size = 64,
 
         filt_base = 1000000, ifmap_base=0, ofmap_base = 2000000,
-        arc_maxbw = 10,
+        arc_maxbw = [10],
 
         sram_read_trace_file = "sram_read.csv",
         sram_write_trace_file = "sram_write.csv",
@@ -84,7 +84,8 @@ def gen_all_traces(
         sram_sz = ifmap_sram_size,
         word_sz_bytes = word_size_bytes,
         min_addr = ifmap_base, max_addr = filt_base,
-        max_bw = arc_maxbw,
+        max_bws = arc_maxbw,
+        penalty = array_h,
         sram_trace_file = sram_read_trace_file,
         dram_trace_file = dram_ifmap_limited_file
     )

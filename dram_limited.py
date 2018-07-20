@@ -56,6 +56,12 @@ class ideal_mem:
         # list of elements 
         self.l = [] 
 
+    def check (self,ele):
+        if ele in self.last_used:
+            return self.last_used[ele]
+        else:
+            return False
+
     def debug(self):
         print ("used:",len(self.last_used))
         print self.last_used 
@@ -66,9 +72,9 @@ class ideal_mem:
 
     # elems required at cycle 
     def read (self, elems, cycle_number, max_number_of_reads):
-        print "read"
+        #print "read"
         while elems and (elems[-1] in self.last_used or \
-                ( (len(self.last_used) < self.size or len(freelist) > 0) \
+                ( (len(self.last_used) < self.size or self.freelist.qsize() > 0) \
                 and max_number_of_reads > 0) ):
             # appending execution list for cycle
             while cycle_number-self.current_cycle >= len(self.l):
@@ -78,7 +84,7 @@ class ideal_mem:
                 max_number_of_reads = max_number_of_reads - 1
             # memory fully occupied but some can be replaced 
             if len(self.last_used) == self.size:
-                toremove = freelist.get()
+                toremove = self.freelist.get()
                 if self.last_used[toremove] != -1 :
                     print "tem um erro aqui"
                 else :
@@ -87,16 +93,16 @@ class ideal_mem:
             self.last_used[elems[-1]] = cycle_number
             self.l[-1].append(elems[-1])
             del elems[-1]
-        self.debug()
+        #self.debug()
         return max_number_of_reads, elems
 
     def run(self,elems, cycle_number):
-        print "run"
+        #print "run"
         flag = True
         for ele in elems:
             if ele not in self.last_used:
                 flag = False
-        print ('cn',cycle_number,flag)
+        # print ('cn',cycle_number,flag)
         if flag and cycle_number == self.current_cycle and len(self.l) > 0:
             for ele in self.l[0]:
                 if self.last_used[ele] == self.current_cycle:
@@ -104,11 +110,11 @@ class ideal_mem:
                     self.freelist.put(ele)
             self.current_cycle = self.current_cycle + 1
             del self.l[0]
-        self.debug()
+        #self.debug()
         return flag
 
-
-def dram_trace_limited(
+# first implementation, stalling whenever it is necessary
+def dram_trace_limited_v1(
         sram_sz         = 512 * 1024,
         word_sz_bytes   = 1,
         min_addr = 0, max_addr=1000000,
@@ -117,43 +123,56 @@ def dram_trace_limited(
         dram_trace_file = "dram_log.csv"
     ):
 
+    res = -1 
     sram = FIFO_mem(sram_sz) 
 
     sram_requests = open(sram_trace_file, 'r')
+    dram          = open(dram_trace_file, 'w')
 
-    total_stalls = 1
-    # slot for next clock
-    extras_slots = 0
+    total_stalls,extras_slots = 1, 0
 
     for entry in sram_requests:
 
-        clk, elems = parse_input(entry,min_addr,max_addr)
+        clk, elems = parse_input(entry,min_addr,max_addr) 
 
-        if len(elems) == 0 :
-            break
-
-        clk = elems[0]
-        #print('clk',int(clk))
-
+        if len(elems) == 0 and res == -1: 
+            res = total_stalls 
         free_reads = extras_slots + max_bw
-        #print('free:',free_reads)
+        stalls = 0
 
         for e in elems:
             
-            if (not sram.check(e)) and (e >= min_addr) and (e < max_addr):
-                #print ('e',int(elems[e]))
+            if not sram.check(e) and e >= min_addr and e < max_addr:
                 if free_reads == 0:
                     free_reads = max_bw
                     total_stalls += 1
+                    stalls += 1
                 free_reads -= 1
                 sram.use(e)
 
         extras_slots = free_reads
 
-    # purpose of first part is generate max pure read cycles
-    max_pure_read_cycles = total_stalls
-    print (max_pure_read_cycles, "!!!!!!!!!!!")
+        trace = str(int(clk)) + " use " + str(int(stalls)) + "\n"
+        dram.write(trace)
+
+
+    trace = "total stalls: " + str(total_stalls)
+    dram.write(trace)
+
     sram_requests.close()
+    dram.close()
+    return total_stalls, res
+
+def dram_trace_limited_v2(
+        sram_sz         = 512 * 1024,
+        word_sz_bytes   = 1,
+        min_addr = 0, max_addr=1000000,
+        max_bw = 1,               
+        max_pure_read_cycles = 1,               
+        penalty = 0,
+        sram_trace_file = "sram_log.csv",
+        dram_trace_file = "dram_log.csv"
+    ):
 
     sram2 = ideal_mem(sram_sz) 
 
@@ -166,28 +185,38 @@ def dram_trace_limited(
         sram_buffer.append(entry)
     sram_requests.close()
     
-    total_stalls = 0
+    stalls = 0
 
+    # read: cycle data into read_buffer, run: attempting cycle
     read, run= -1, 0 
     # read, run cycle
     read_c, run_c = 0, 0
     read_buffer, run_buffer = [], []
 
+    debug_count = 0
+
     while run < len(sram_buffer):
 
-        print "read"
+        #print "read"
         # read
         read_stall = 0
         max_number_of_reads = max_pure_read_cycles * max_bw
         while True:
+            '''if read_c >= 10019 and read_c <= 10050:
+                print ('read',read,read_c)
+                print ('run',run,run_c)
+                sram2.debug()'''
             if len(read_buffer) == 0:
-                read = read + 1
-                if read == len(sram_buffer):
+                read += 1
+                if read >= len(sram_buffer):
                     break
+                print (read,len(sram_buffer))    
                 read_c, read_buffer = parse_input(sram_buffer[read],min_addr,max_addr)
 
             read_stall += max_number_of_reads
+            print ('1.[]debug_read', read_c, sram2.check(0.0))
             max_number_of_reads,read_buffer = sram2.read(read_buffer,read_c,max_number_of_reads)
+            print ('1.()debug_read', read_c, sram2.check(0.0))
             # sram full
             read_stall -= max_number_of_reads
             # 2 possible break conditions: read buffer not cleared (mem full) 
@@ -195,35 +224,79 @@ def dram_trace_limited(
             if len(read_buffer) != 0:
                 break
 
-        trace = str(int(run_c)) + " use " + str(int(read_stall/max_bw)) + "\n"
-        dram.write(trace)
+        cycle_stalls = (read_stall+max_bw-1)/max_bw
+        stalls += cycle_stalls
+        # trace = str(int(run_c)) + " use " + str(int(cycle_stalls)) + "\n"
+        # dram.write(trace)
 
-        print "exe"
+        #print "exe"
         # execute
         while True:
             if run == len(sram_buffer):
                 break
             run_c, run_buffer = parse_input(sram_buffer[run],min_addr,max_addr)
+            if len(run_buffer) == 0:
+                run += 1
+                break
+            print ('[]debug_run', run_c, sram2.check(0.0))
+            # move down this lne
             res = sram2.run(run_buffer,run_c)
-            print res
+            print ('()debug_run', run_c, sram2.check(0.0))
             if not res:
+                dram.write("penalty at " + str(run_c) + "of " + str(penalty) + " cycles\n")
+                stalls += penalty
                 break
             else:
-                run = run + 1
+                run += 1
             # read while running 
             number_of_reads = max_bw
             while True:
                 if len(read_buffer) == 0:
-                    read = read + 1
+                    read += 1
                     if read < len(sram_buffer):
                         read_c, read_buffer = parse_input(sram_buffer[read],min_addr,max_addr)
                     else:
                         break
+                print ('2.[]debug_read', read_c, sram2.check(0.0))
                 number_of_reads, read_buffer = sram2.read(read_buffer,read_c,number_of_reads)
+                print ('2.()debug_read', read_c, sram2.check(0.0))
                 if len(read_buffer) != 0:
                     break
-    dram.close()
 
+        if read_c >= 10019 and read_c <= 10050:
+            print ('read',read,read_c)
+            print ('run',run,run_c)
+            sram2.debug()
+        print ('read',read,read_c)
+        print ('run',run,run_c)
+        if run_c == 10019.0:
+            debug_count = debug_count + 1
+        if debug_count >= 5:
+            break
+
+    trace = "total stalls: " + str(stalls)
+    dram.write(trace)
+    dram.close()
+    return stalls
+
+def dram_trace_limited(
+        sram_sz         = 512 * 1024,
+        word_sz_bytes   = 1,
+        min_addr = 0, max_addr=1000000,
+        max_bws = [1],               
+        penalty = 0,               
+        sram_trace_file = "sram_log.csv",
+        dram_trace_file = "dram_log.csv"
+    ):
+
+    for max_bw in max_bws:
+        if max_bw == 9:
+            print "max_bw = " + str(max_bw)
+            stalls, max_pure_read_cycles = dram_trace_limited_v1(sram_sz,word_sz_bytes,min_addr,max_addr,max_bw,sram_trace_file,"first_method"+dram_trace_file)
+            print ("first method", stalls)
+            print ("max pure cyles:", max_pure_read_cycles)
+            stalls = dram_trace_limited_v2(sram_sz,word_sz_bytes,min_addr, max_addr, max_bw, max_pure_read_cycles, penalty, sram_trace_file,"second_method"+dram_trace_file)
+            print ("second method", stalls)
 
 if __name__ == "__main__":
     t = ideal_mem(5)

@@ -11,7 +11,7 @@ def run_net( ifmap_sram_size=1,
              array_h=32,
              array_w=32,
              data_flow = 'os',
-             arc_maxbw = 10,
+             arc_maxbw = [10],
              topology_file = './topologies/yolo_v2.csv',
              net_name='yolo_v2'
             ):
