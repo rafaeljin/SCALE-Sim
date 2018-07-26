@@ -5,9 +5,9 @@ import os
 import subprocess
 
 
-def run_net( ifmap_sram_size=1,
-             filter_sram_size=1,
-             ofmap_sram_size=1,
+def run_net( ifmap_sram_size=[1],
+             filter_sram_size=[1],
+             ofmap_sram_size=[1],
              array_h=32,
              array_w=32,
              data_flow = 'os',
@@ -16,6 +16,7 @@ def run_net( ifmap_sram_size=1,
              net_name='yolo_v2'
             ):
 
+    mytest = True
     # rafaelj tmp modi, change size to real value instead of times 1024
     # size based on bytes
     # ifmap_sram_size *= 1024
@@ -94,25 +95,27 @@ def run_net( ifmap_sram_size=1,
                                     dram_ifmap_trace_file= net_name + "_" + name + "_dram_ifmap_read.csv",
                                     dram_ifmap_limited_file= net_name + "_" + name + "_dram_ifmap_limited.csv",
                                     dram_filter_limited_file= net_name + "_" + name + "_dram_filter_limited.csv",
+                                    dram_ofmap_trace_file= "fsd" 
+                                    )
+
+        bw.write(str(bw_log) + "\n")
+
+        if not mytest:
+            max_bw_log += tg.gen_max_bw_numbers(
+                                    sram_read_trace_file = net_name + "_" + name + "_sram_read.csv",
+                                    sram_write_trace_file= net_name + "_" + name + "_sram_write.csv",
+                                    dram_filter_trace_file=net_name + "_" + name + "_dram_filter_read.csv",
+                                    dram_ifmap_trace_file= net_name + "_" + name + "_dram_ifmap_read.csv",
                                     dram_ofmap_trace_file= net_name + "_" + name + "_dram_ofmap_write.csv"
                                     )
 
-        bw.write(bw_log + "\n")
-
-        max_bw_log += tg.gen_max_bw_numbers(
-                                sram_read_trace_file = net_name + "_" + name + "_sram_read.csv",
-                                sram_write_trace_file= net_name + "_" + name + "_sram_write.csv",
-                                dram_filter_trace_file=net_name + "_" + name + "_dram_filter_read.csv",
-                                dram_ifmap_trace_file= net_name + "_" + name + "_dram_ifmap_read.csv",
-                                dram_ofmap_trace_file= net_name + "_" + name + "_dram_ofmap_write.csv"
-                                )
-
-        maxbw.write(max_bw_log + "\n")
+            maxbw.write(str(max_bw_log) + "\n")
 
         last_line = subprocess.check_output(["tail","-1", net_name + "_" + name + "_sram_write.csv"] )
         clk = str(last_line).split(',')[0]
         # rafaeljin, clk contains no ' ?
         # clk = str(clk).split("'")[1] 
+        print clk
         line = name + ",\t" + clk + ",\n"
         cycl.write(line)
 

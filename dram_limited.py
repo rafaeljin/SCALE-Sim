@@ -80,22 +80,6 @@ class ideal_mem:
                 (elems[-1] in self.last_used or \
                         ( (len(self.last_used) < self.size or len(self.freelist) > 0) and max_number_of_reads > 0 ) ):
             # appending execution list for cycle
-            if elems[-1] in self.last_used:
-                print "COND 1"
-            elif max_number_of_reads > 0:
-                if len(self.last_used) < self.size:
-                    print "COND 2"
-                elif len(self.freelist) > 0:
-                    print "COND 3"
-                    print ("check1",self.freelist[0])
-                    if self.freelist[0] not in self.last_used:
-                        print "COND 3 Exception 1"
-                    elif self.last_used[self.freelist[0]] != -1:
-                        print "COND 3 Exception 2"
-                    else:
-                        print "okay"
-                else:
-                    print "COND 4??"
             while cycle_number-self.current_cycle >= len(self.l):
                 self.l.append([])
             # if not in memory, one read required. 
@@ -106,7 +90,6 @@ class ideal_mem:
                     if len(self.freelist) <= 0:
                         raise Exception("erro aqui")
                     toremove = self.freelist.popleft()
-                    print ("check2",toremove)
                     if self.last_used[toremove] != -1 :
                         raise Exception("tem um erro aqui")
                     else :

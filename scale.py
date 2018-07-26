@@ -33,25 +33,27 @@ class scale:
     
         # [i/f/o]sram_[min/max]: IFMAP/FILTER/OFMAP SRAM buffer min/max
         ifmap_sram = config.get(arch_sec, 'IfmapSramSz').split(',')
-        self.isram_min = ifmap_sram[0].strip()
-        if len(ifmap_sram) > 1:
-            self.isram_max = ifmap_sram[1].strip()
+        # self.isram_min = ifmap_sram[0].strip()
+        self.isram_min = [int(x.strip()) for x in ifmap_sram] 
+        '''if len(ifmap_sram) > 1:
+            self.isram_max = ifmap_sram[1].strip() '''
         filter_sram = config.get(arch_sec, 'FilterSramSz').split(',')
-        self.fsram_min = filter_sram[0].strip()
-        if len(filter_sram) > 1:
-            self.fsram_max = filter_sram[1].strip()
+        #self.fsram_min = filter_sram[0].strip()
+        self.fsram_min = [int(x.strip()) for x in filter_sram] 
+        '''if len(filter_sram) > 1:
+            self.fsram_max = filter_sram[1].strip() '''
         ofmap_sram = config.get(arch_sec, 'OfmapSramSz').split(',')
-        self.osram_min = ofmap_sram[0].strip()
-        if len(ofmap_sram) > 1:
-            self.osram_max = ofmap_sram[1].strip()
+        #self.osram_min = ofmap_sram[0].strip()
+        self.osram_min = [int(x.strip()) for x in ofmap_sram] 
+        '''if len(ofmap_sram) > 1:
+            self.osram_max = ofmap_sram[1].strip() '''
     
         self.dataflow= config.get(arch_sec, 'Dataflow')
 
         # architecture maximum bandwidth limitation
-        arc_max_bandw = config.get(arch_sec,'MaxBandwidth').split(',')
+        arc_max_bandw = config.get(arch_sec,'maxbandwidth').split(',')
         #self.arc_maxbw = arc_max_bandw[0].strip()
         self.arc_maxbw = [int(x.strip()) for x in arc_max_bandw] 
-        print('jara',self.arc_maxbw)
     
         ## Read network_presets
         topology_file = config.get(net_sec, 'TopologyCsvLoc')
@@ -82,12 +84,12 @@ class scale:
         net_name = self.topology_file.split('/')[-1].split('.')[0]
         #print("Net name = " + net_name)
         
-        r.run_net(  ifmap_sram_size  = int(self.isram_min),
-                    filter_sram_size = int(self.fsram_min),
-                    ofmap_sram_size  = int(self.osram_min),
+        r.run_net(  ifmap_sram_size  = self.isram_min,
+                    filter_sram_size = self.fsram_min,
+                    ofmap_sram_size  = self.osram_min,
                     array_h = int(self.ar_h_min),
                     array_w = int(self.ar_w_min),
-                    net_name = net_name,
+                    net_name = str(net_name),
                     data_flow = self.dataflow,
                     arc_maxbw = self.arc_maxbw,
                     topology_file = self.topology_file

@@ -20,10 +20,10 @@ def gen_sram_write_trace(
                 val =t_last_out[v-1] + 1
                 t_last_out.append(val)
         # determine number of folds for ifmap (horizontal input)
-        print ('e2',e2)
+        #print ('e2',e2)
         num_folds = math.ceil(e2/d_h)
         num_left = e2
-        print "v_use:" + str(v_use)
+        #print "v_use:" + str(v_use)
         fwrite = open(sram_write_trace_file, 'a')
 
         for i in range(int(num_folds)):
@@ -74,7 +74,7 @@ def gen_trace_one_fold(
     h_base = []
     h_addr = []
     slide_ctr   = 0
-    print 'd_h:', d_h
+    #print 'd_h:', d_h
     for i in range(int(d_h)):
         if i == 0:
             base = 0
@@ -94,9 +94,9 @@ def gen_trace_one_fold(
         h_base.append(base)
         h_addr.append(base)
         h_id.append(i)
-    print "haha"
-    print h_base
-    print h_id
+    #print "haha"
+    #print h_base
+    #print h_id
 
     for i in range(int(d_v)):
         v_ctr.append(0)
@@ -244,7 +244,7 @@ def sram_traffic(
     # rc: 
     e2 = E_h * E_w
     r2c = filt_h * filt_w * num_channels
-    print ("r2c",r2c)
+    #print ("r2c",r2c)
     rc = filt_w * num_channels
     # h2 = ifmap_w * ifmap_h # not used?
 
@@ -262,7 +262,7 @@ def sram_traffic(
 
     # how many folds for filters to fit in vertical input
     num_folds = math.ceil(1.0 * num_filt / num_v_lanes)
-    print "num_folds is " + str(num_folds)
+    #print "num_folds is " + str(num_folds)
     max_v_counts = math.ceil(1.0 * e2 / num_h_lanes)
 
     v_rem = num_filt
@@ -304,7 +304,7 @@ def sram_traffic(
                             )
 
         global_cycles -= 1
-        print("global_cycles: " + str(global_cycles))
+        # print("global_cycles: " + str(global_cycles))
 
         del(v_id[:])
         del(v_base[:])

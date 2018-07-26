@@ -15,7 +15,7 @@ def gen_all_traces(
         data_flow = 'os',
 
         word_size_bytes = 1,
-        filter_sram_size = 64, ifmap_sram_size= 64, ofmap_sram_size = 64,
+        filter_sram_size = [64], ifmap_sram_size= [64], ofmap_sram_size = [64],
 
         filt_base = 1000000, ifmap_base=0, ofmap_base = 2000000,
         arc_maxbw = [10],
@@ -57,48 +57,54 @@ def gen_all_traces(
             sram_write_trace_file = sram_write_trace_file
         )
 
+    mytest = True
     # generate DRAM trace files (filter, input, output) 
-    dram.dram_trace_read_v2(
-        sram_sz = ifmap_sram_size,
-        word_sz_bytes = word_size_bytes,
-        min_addr = ifmap_base, max_addr = filt_base,
-        sram_trace_file = sram_read_trace_file,
-        dram_trace_file = dram_ifmap_trace_file,
-    )
-    dram.dram_trace_read_v2(
-        sram_sz = filter_sram_size,
-        word_sz_bytes = word_size_bytes,
-        min_addr = filt_base, max_addr = (filt_base * 10000),
-        sram_trace_file = sram_read_trace_file,
-        dram_trace_file = dram_filter_trace_file,
-    )
-    dram.dram_trace_write(
-        ofmap_sram_size = ofmap_sram_size,
-        data_width_bytes = word_size_bytes,
-        sram_write_trace_file = sram_write_trace_file,
-        dram_write_trace_file = dram_ofmap_trace_file
-    )
+    if not mytest:
+        dram.dram_trace_read_v2(
+            sram_sz = ifmap_sram_size,
+            word_sz_bytes = word_size_bytes,
+            min_addr = ifmap_base, max_addr = filt_base,
+            sram_trace_file = sram_read_trace_file,
+            dram_trace_file = dram_ifmap_trace_file,
+        )
+        dram.dram_trace_read_v2(
+            sram_sz = filter_sram_size,
+            word_sz_bytes = word_size_bytes,
+            min_addr = filt_base, max_addr = (filt_base * 10000),
+            sram_trace_file = sram_read_trace_file,
+            dram_trace_file = dram_filter_trace_file,
+        )
+        dram.dram_trace_write(
+            ofmap_sram_size = ofmap_sram_size,
+            data_width_bytes = word_size_bytes,
+            sram_write_trace_file = sram_write_trace_file,
+            dram_write_trace_file = dram_ofmap_trace_file
+        )
+        bw_numbers = gen_bw_numbers(dram_ifmap_trace_file, dram_filter_trace_file, dram_ofmap_trace_file, sram_write_trace_file, sram_read_trace_file)
 
-    #  generate bandwidth limited tracefiles (filter, input)
-    dram_l.dram_trace_limited(
-        sram_sz = ifmap_sram_size,
-        word_sz_bytes = word_size_bytes,
-        min_addr = ifmap_base, max_addr = filt_base,
-        max_bws = arc_maxbw,
-        penalty = array_h,
-        sram_trace_file = sram_read_trace_file,
-        dram_trace_file = dram_ifmap_limited_file
-    )
-    """dram_l.dram_trace_limited(
-        sram_sz = filter_sram_size,
-        word_sz_bytes = word_size_bytes,
-        min_addr = filt_base, max_addr = (filt_base * 10000),
-        max_bw = arc_maxbw, # could set different bw limit for filter and input
-        sram_trace_file = sram_read_trace_file,
-        dram_trace_file = dram_filter_limited_file
-    )"""
-
-    bw_numbers = gen_bw_numbers(dram_ifmap_trace_file, dram_filter_trace_file, dram_ofmap_trace_file, sram_write_trace_file, sram_read_trace_file)
+    else:
+        #  generate bandwidth limited tracefiles (filter, input)
+        print "DRAM limited results for ifmap"
+        dram_l.dram_trace_limited(
+            sram_szs = ifmap_sram_size,
+            word_sz_bytes = word_size_bytes,
+            min_addr = ifmap_base, max_addr = filt_base,
+            max_bws = arc_maxbw,
+            penalty = array_h,
+            sram_trace_file = sram_read_trace_file,
+            dram_trace_file = dram_ifmap_limited_file
+        )
+        print "DRAM limited results for filter"
+        dram_l.dram_trace_limited(
+            sram_szs = filter_sram_size,
+            word_sz_bytes = word_size_bytes,
+            min_addr = filt_base, max_addr = (filt_base * 10000),
+            max_bws = arc_maxbw, 
+            penalty = array_h,
+            sram_trace_file = sram_read_trace_file,
+            dram_trace_file = dram_filter_limited_file
+        )
+        bw_numbers = "0"
 
     return bw_numbers
 
