@@ -84,26 +84,17 @@ def gen_all_traces(
 
     else:
         #  generate bandwidth limited tracefiles (filter, input)
-        print "DRAM limited results for ifmap"
+        print "DRAM limited results for combine SRAM for filter and ifmap"
         dram_l.dram_trace_limited(
             sram_szs = ifmap_sram_size,
             word_sz_bytes = word_size_bytes,
-            min_addr = ifmap_base, max_addr = filt_base,
+            min_addr = ifmap_base, max_addr = (filt_base * 10000),
             max_bws = arc_maxbw,
             penalty = array_h,
             sram_trace_file = sram_read_trace_file,
             dram_trace_file = dram_ifmap_limited_file
         )
-        print "DRAM limited results for filter"
-        dram_l.dram_trace_limited(
-            sram_szs = filter_sram_size,
-            word_sz_bytes = word_size_bytes,
-            min_addr = filt_base, max_addr = (filt_base * 10000),
-            max_bws = arc_maxbw, 
-            penalty = array_h,
-            sram_trace_file = sram_read_trace_file,
-            dram_trace_file = dram_filter_limited_file
-        )
+
         bw_numbers = "0"
 
     return bw_numbers

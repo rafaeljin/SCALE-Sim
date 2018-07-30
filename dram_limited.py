@@ -223,7 +223,7 @@ def dram_trace_limited_v2(
     while run < len(sram_buffer):
 
         if debug_mode:
-            print "read"
+            print "read======================================"
         # read
         read_stall = 0
         max_number_of_reads = max_pure_read_cycles * max_bw
@@ -243,14 +243,14 @@ def dram_trace_limited_v2(
             if len(read_buffer) != 0:
                 break
         if debug_mode:
-            print read_c 
+            print sram2.last_used.keys() #read_c 
         cycle_stalls = (read_stall+max_bw-1)/max_bw
         stalls += cycle_stalls
         # trace = str(int(run_c)) + " use " + str(int(cycle_stalls)) + "\n"
         # dram.write(trace)
 
         if debug_mode:
-            print "exe"
+            print "exe======================================="
         # execute
         while True:
             if run == len(sram_buffer):
@@ -267,6 +267,8 @@ def dram_trace_limited_v2(
                 break
             else:
                 run += 1
+            if debug_mode:
+                print "run:" + str(run_c)
             # read while running 
             number_of_reads = max_bw
             while True:
@@ -281,8 +283,10 @@ def dram_trace_limited_v2(
                 # no more free bandwidth in this cycle
                 if len(read_buffer) != 0:
                     break
+            if debug_mode:
+                print sram2.last_used.keys()
         if debug_mode:
-            print run_c
+            print ""#run_c
 
     trace = "total stalls: " + str(stalls)
     dram.write(trace)
@@ -300,14 +304,23 @@ def dram_trace_limited(
     ):
 
     for max_bw in max_bws:
+        bw_res = []
         print "max_bw = " + str(max_bw)
+        repeat,lastvalue = False, -1
         for sram_sz in sram_szs:
             print "\tsram_sz = " + str(sram_sz)
-            stalls, max_pure_read_cycles = dram_trace_limited_v1(sram_sz,word_sz_bytes,min_addr,max_addr,max_bw,sram_trace_file,"first_method"+dram_trace_file)
+            if not repeat:
+                stalls, max_pure_read_cycles = dram_trace_limited_v1(sram_sz,word_sz_bytes,min_addr,max_addr,max_bw,sram_trace_file,"first_method"+dram_trace_file)
             print "\t\tfirst method " + str(stalls)
             print "\t\tmax pure cyles:"+ str(max_pure_read_cycles)
-            stalls = dram_trace_limited_v2(sram_sz,word_sz_bytes,min_addr, max_addr, max_bw, max_pure_read_cycles, penalty, sram_trace_file,"second_method"+dram_trace_file)
-            print "\t\tsecond method" + str(stalls)
+            if not repeat:
+                stalls = dram_trace_limited_v2(sram_sz,word_sz_bytes,min_addr, max_addr, max_bw, max_pure_read_cycles, penalty, sram_trace_file,"second_method"+dram_trace_file)
+            print "\t\tsecond method " + str(stalls)
+            if stalls == lastvalue:
+                repeat = True
+            lastvalue = stalls
+            bw_res.append(stalls)
+        print bw_res
 
 if __name__ == "__main__":
     t = ideal_mem(5)
