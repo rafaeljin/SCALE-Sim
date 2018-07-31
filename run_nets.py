@@ -17,8 +17,10 @@ def run_net( ifmap_sram_size=[1],
             ):
 
     mytest = True
-    # rafaelj tmp modi, change size to real value instead of times 1024
-    # size based on bytes
+    # max sram = max layer sram 
+    max_sram = 0
+
+    # SRAM size modified to bytes instead of kB
     # ifmap_sram_size *= 1024
     # filter_sram_size *= 1024
     # ofmap_sram_size *= 1024
@@ -70,6 +72,11 @@ def run_net( ifmap_sram_size=[1],
         strides = int(elems[7])
         filter_base = 1000000 * 100
 
+        # max sram = max (IFMAP + 2N filter) where N is the width of the array
+        layer_sram = ifmap_h*ifmap_w*num_channels + array_w*(filt_h*filt_w*num_channels)
+        max_sram = max(layer_sram,max_sram)
+        print("Layer SRAM is " + str(layer_sram) + " bytes")
+
         bw_log = str(ifmap_sram_size) +",\t" + str(filter_sram_size) + ",\t" + str(ofmap_sram_size) + ",\t" + name + ",\t"
         max_bw_log = bw_log
 
@@ -85,7 +92,7 @@ def run_net( ifmap_sram_size=[1],
                                     data_flow = data_flow,
                                     word_size_bytes = 1,
                                     filter_sram_size = filter_sram_size, 
-                                    ifmap_sram_size = ifmap_sram_size, 
+                                    ifmap_sram_size = [layer_sram], 
                                     ofmap_sram_size = ofmap_sram_size,
                                     filt_base =  filter_base,
                                     arc_maxbw = arc_maxbw,

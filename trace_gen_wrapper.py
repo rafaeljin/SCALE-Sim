@@ -91,6 +91,9 @@ def gen_all_traces(
             min_addr = ifmap_base, max_addr = (filt_base * 10000),
             max_bws = arc_maxbw,
             penalty = array_h,
+            array_w = array_w,
+            num_filt = num_filt,
+            filter_size = filt_h*filt_w*num_channels,
             sram_trace_file = sram_read_trace_file,
             dram_trace_file = dram_ifmap_limited_file
         )
